@@ -1,0 +1,247 @@
+{
+  "name": "Test WF",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -840,
+        -220
+      ],
+      "id": "fc591c3e-e7b9-4e28-b767-548442c6e774",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "922f9983-11bc-4760-b2ff-cf7f611093c0",
+              "name": "image_list",
+              "value": "=['https://i.ytimg.com/vi/sks1uIA70ok/maxresdefault.jpg',\n'https://i.ytimg.com/vi/jkWf8YSXhVY/maxresdefault.jpg',\n'https://i.ytimg.com/vi/OfLYgNmsKoQ/maxresdefault.jpg']",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -620,
+        -220
+      ],
+      "id": "4aee82f4-2017-4b8b-b510-46b76baddd47",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "attached_media",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        280,
+        -220
+      ],
+      "id": "dfb1358c-2a9f-44cf-8e85-9df931ba437b",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "image_list",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -220
+      ],
+      "id": "4297501c-f941-4e22-a0bb-c9c3492afb11",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "me",
+        "edge": "feed",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "message",
+                "value": "Đây là những video của Mì AI về n8n hay lắm!"
+              },
+              {
+                "name": "published",
+                "value": "true"
+              },
+              {
+                "name": "attached_media",
+                "value": "={{ $json.attached_media }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        500,
+        -220
+      ],
+      "id": "1d671bbf-f91e-4aff-8003-e5afbddd4617",
+      "name": "Facebook Graph API1",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "O0lZmGetNKNs07Gn",
+          "name": "Facebook (train)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4bbfd9a9-d466-4d85-bf56-4855bd69a995",
+              "name": "media_fbid",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        60,
+        -220
+      ],
+      "id": "f8e6715e-106f-4510-8393-e5573af1e06e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "me",
+        "edge": "photos",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "url",
+                "value": "={{ $json.image_list }}"
+              },
+              {
+                "name": "published",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -220
+      ],
+      "id": "75da28e1-7cb3-45eb-9d78-d33a30e3cb95",
+      "name": "Up ảnh lên trước lấy ID ảnh",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "O0lZmGetNKNs07Gn",
+          "name": "Facebook (train)"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Up ảnh lên trước lấy ID ảnh",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Facebook Graph API1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Up ảnh lên trước lấy ID ảnh": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1d6b4ad5-45bd-46a4-83f0-4faa59334983",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "66f9cec1b36ca6b540ed571cc2bed53a4ed5969b7316077dd56c27491c282b07"
+  },
+  "id": "yfmLoG50wwAtjIGH",
+  "tags": []
+}
